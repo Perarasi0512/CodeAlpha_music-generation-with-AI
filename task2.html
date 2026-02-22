@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>FAQ Chatbot</title>
+
+<style>
+body{
+    font-family:Arial;
+    background:linear-gradient(135deg,#74ebd5,#9face6);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.chatbox{
+    width:360px;
+    background:white;
+    border-radius:15px;
+    padding:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.3);
+}
+
+.messages{
+    height:320px;
+    overflow-y:auto;
+    border:1px solid #ddd;
+    padding:10px;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+.user{color:#0b5ed7;margin:6px 0;}
+.bot{color:#198754;margin:6px 0;}
+
+input{
+    width:70%;
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+
+button{
+    padding:10px;
+    border:none;
+    background:#6c63ff;
+    color:white;
+    border-radius:8px;
+    cursor:pointer;
+}
+button:hover{background:#574fd6;}
+</style>
+</head>
+
+<body>
+
+<div class="chatbox">
+<h3>🤖 FAQ Chatbot</h3>
+
+<div class="messages" id="chat"></div>
+
+<input id="msg" placeholder="Ask a question">
+<button onclick="send()">Send</button>
+
+</div>
+
+<script>
+
+// FAQ database
+const faq = [
+["working hours","We are open from 9 AM to 6 PM Monday to Saturday."],
+["contact support","You can contact support at support@example.com"],
+["office location","Our office is located in Chennai, India"],
+["delivery time","Delivery takes 3 to 5 business days"],
+["return product","Products can be returned within 7 days"]
+];
+
+// similarity matching
+function similarity(input, question){
+    input=input.toLowerCase();
+    question=question.toLowerCase();
+
+    let words=input.split(" ");
+    let score=0;
+
+    words.forEach(word=>{
+        if(question.includes(word)) score++;
+    });
+
+    return score;
+}
+
+function getAnswer(message){
+    let bestScore=0;
+    let bestAnswer="Sorry, I don't understand your question.";
+
+    faq.forEach(item=>{
+        let score=similarity(message,item[0]);
+        if(score>bestScore){
+            bestScore=score;
+            bestAnswer=item[1];
+        }
+    });
+
+    return bestAnswer;
+}
+
+// chat
+function send(){
+    let input=document.getElementById("msg");
+    let message=input.value;
+    if(message.trim()=="") return;
+
+    let chat=document.getElementById("chat");
+
+    chat.innerHTML+=`<div class="user"><b>You:</b> ${message}</div>`;
+
+    let reply=getAnswer(message);
+
+    setTimeout(()=>{
+        chat.innerHTML+=`<div class="bot"><b>Bot:</b> ${reply}</div>`;
+        chat.scrollTop=chat.scrollHeight;
+    },400);
+
+    input.value="";
+}
+
+</script>
+
+</body>
+</html>
